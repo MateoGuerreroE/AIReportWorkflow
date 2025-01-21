@@ -15,8 +15,9 @@ tempo_api_token = os.getenv("TEMPO_API_TOKEN")
 def get_ranged_work_logs(start_date: str, end_date: str):
     tempo_headers = {'Authorization': 'Bearer ' + tempo_api_token}
     tempo_built_url = f"{tempo_url}?from={start_date}&to={end_date}"
+
     response = fetch(tempo_built_url, headers=tempo_headers)
-    if tempo_built_url is None:
+    if response is None:
         raise Exception('Unable to fetch tempo entries')
     return response['results']
 

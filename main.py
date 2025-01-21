@@ -42,7 +42,7 @@ def normalize_data(github_prs, tempo_worklog, jira_email):
             if existent_entry:
                 for item in result:
                     if item['key'] == target_ticket:
-                        item['commits'].append(*pr['commits'])
+                        item['commits'].extend(pr['commits'])
             else:
                 empty_log = get_empty_worklog(target_ticket)
                 result.append({
@@ -88,7 +88,7 @@ def publish_developer_report(gh_name: str, jira_email: str, days: int) -> str:
     print(report)
     return "Report published"
 
-final_result = publish_developer_report('MateoGuerreroE', 'mateo.guerrero@omedym.io', days_passed)
+final_result = get_developer_summary('MateoGuerreroE', 'mateo.guerrero@omedym.io', days_passed)
 print(final_result)
 
 
