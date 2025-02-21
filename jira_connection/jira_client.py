@@ -1,5 +1,7 @@
 from jira import JIRA
 from dotenv import load_dotenv
+
+from tempo_connection.logger.data_mapping.TicketStatusChange import TicketStatusChange
 from utils import get_unique_issue_keys
 import os
 
@@ -8,7 +10,7 @@ load_dotenv()
 jira_api_token = os.getenv("JIRA_API_TOKEN")
 jira_domain = os.getenv("JIRA_DOMAIN")
 
-class JiraUser:
+class JiraInstance:
     jira = None
     accountId = None
     def __init__(self, domain, email, token):
@@ -23,13 +25,20 @@ class JiraUser:
         except IndexError:
             raise Exception('User email not found in JIRA')
 
-def get_jira_user(domain, email, token) -> JiraUser:
-    return JiraUser(domain, email, token)
 
+def get_jira_instance(domain, email, token) -> JiraInstance:
+    return JiraInstance(domain, email, token)
+
+def get_jira_status_changes(ticket_id, email) -> list[dict]:
+    instance = get_jira_instance(jira_domain, email, jira_api_token)
+    issue = instance.jira.issue(ticket_id, expand="changelog")
+    if issue:
+        return issue.changelog.histories
+    return []
 
 def get_issue_description(email: str, issue: str):
-    user = get_jira_user(jira_domain, email, jira_api_token)
-    issue = user.jira.issue(issue)
+    instance = get_jira_instance(jira_domain, email, jira_api_token)
+    issue = instance.jira.issue(issue)
     if issue:
         return issue.fields.description
     return 'None'
@@ -47,8 +56,8 @@ def map_issues_description(issue_list, email):
         issue['description'] = issue_description
 
 def get_ticket_title(ticket_key, email):
-    user = get_jira_user(jira_domain, email, jira_api_token)
-    issue = user.jira.issue(ticket_key)
+    instance = get_jira_instance(jira_domain, email, jira_api_token)
+    issue = instance.jira.issue(ticket_key)
     if issue:
         return issue.fields.summary
     return 'None'
