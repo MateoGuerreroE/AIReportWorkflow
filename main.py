@@ -88,7 +88,7 @@ def publish_developer_report(gh_name: str, jira_email: str, days: int) -> str:
     print(report)
     return "Report published"
 
-final_result = get_developer_summary('MateoGuerreroE', 'mateo.guerrero@omedym.io', 0)
+final_result = publish_developer_report('MateoGuerreroE', 'mateo.guerrero@omedym.io', 22)
 print(final_result)
 
 
