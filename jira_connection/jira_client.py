@@ -1,7 +1,5 @@
 from jira import JIRA
 from dotenv import load_dotenv
-
-from tempo_connection.logger.data_mapping.TicketStatusChange import TicketStatusChange
 from utils import get_unique_issue_keys
 import os
 

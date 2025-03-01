@@ -40,3 +40,9 @@ def is_hour_within_range(start_time: str, target_time: str, delta: int) -> bool:
     upper_limit = base_time + timedelta(minutes=delta)
 
     return base_time <= check_time <= upper_limit
+
+def is_hour_earlier_than(start_time: str, target_time: str) -> bool:
+    base_time = datetime.strptime(start_time, '%H:%M:%S')
+    check_time = datetime.strptime(target_time, '%H:%M:%S')
+
+    return base_time <= check_time
