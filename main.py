@@ -3,7 +3,7 @@ from github_connection import get_user_prs_and_commits_within_range
 from jira_connection import get_ticket_title
 from gemini_connection import generate_report_text
 from jira_connection import map_issues_description
-from teamplify_connection import send_teamplify_report, is_valid_report_day
+from teamplify_connection import send_teamplify_report, get_target_days
 from tempo_connection import get_tempo_worklog_list, get_empty_worklog
 from utils import remove_key
 from dotenv import load_dotenv
@@ -14,6 +14,8 @@ os.environ["GLOG_minloglevel"] = "2"
 load_dotenv()
 
 days_passed = int(os.getenv("DAYS_PASSED"))
+work_email = os.getenv("JIRA_EMAIL")
+GITHUB_USER = os.getenv("GITHUB_USER")
 
 def normalize_data(github_prs, tempo_worklog, jira_email):
     result = []
@@ -77,18 +79,19 @@ def get_developer_summary(github_username: str, jira_email: str, passed_days: in
     generated_report = generate_report_text(dev_work)
     return generated_report
 
-def publish_developer_report(gh_name: str, jira_email: str, days: int) -> str:
-    should_report = is_valid_report_day(days)
-    if not should_report:
+# Default days ago since it's the most common use case. For using this tool to update
+# past days, provide the number of days as an argument.
+def publish_developer_report(gh_name: str, jira_email: str, days=1) -> str:
+    target_days = get_target_days(days)
+    if target_days == 0:
         return "A report should not be published for this day based on received parameters."
-    generated_report = get_developer_summary(gh_name, jira_email, days)
-    date = datetime.now() - timedelta(days=days)
+    generated_report = get_developer_summary(gh_name, jira_email, target_days)
+    date = datetime.now() - timedelta(days=days - 1)
     formatted_date = date.strftime("%Y-%m-%d")
-    report = send_teamplify_report(formatted_date, generated_report)
-    print(report)
+    send_teamplify_report(formatted_date, generated_report)
     return "Report published"
 
-final_result = publish_developer_report('MateoGuerreroE', 'mateo.guerrero@omedym.io', 0)
+final_result = publish_developer_report(GITHUB_USER, work_email)
 print(final_result)
 
 
