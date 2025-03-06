@@ -41,8 +41,8 @@ def get_holiday_match(variables, token):
         return None
 
 
-def is_valid_report_day(days_ago: int):
-    target_day = datetime.now() - timedelta(days=days_ago)
+def get_target_days(received_days: int) -> int:
+    target_day = datetime.now() - timedelta(days=received_days)
     formatted_date = target_day.strftime('%Y-%m-%d')
     query_variables = {
         "date": formatted_date,
@@ -56,10 +56,11 @@ def is_valid_report_day(days_ago: int):
             return False
 
     weekday = target_day.weekday()
-    if weekday in invalid_weekdays:
-        return False
-
-    return True
+    if received_days != 1 and weekday in invalid_weekdays:
+        return 0
+    elif weekday == 6:
+        return 3
+    return 1
 
 def publish_report(variables, token):
     headers = {

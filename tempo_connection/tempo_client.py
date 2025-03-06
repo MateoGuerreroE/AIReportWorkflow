@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 tempo_url = 'https://api.tempo.io/4/worklogs'
-banned_ids = [11399] # Ids from time-tracking issues, like OA-5
+banned_ids = [11399, 16083, 14167] # Ids from time-tracking or env issues, like OA-5
 
 load_dotenv()
 

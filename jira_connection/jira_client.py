@@ -34,6 +34,13 @@ def get_jira_status_changes(ticket_id, email) -> list[dict]:
         return issue.changelog.histories
     return []
 
+def get_issue_status(ticket_id, email) -> str:
+    instance = get_jira_instance(jira_domain, email, jira_api_token)
+    issue = instance.jira.issue(ticket_id)
+    if issue:
+        return issue.fields.status.name
+    return "Unknown"
+
 def get_issue_description(email: str, issue: str):
     instance = get_jira_instance(jira_domain, email, jira_api_token)
     issue = instance.jira.issue(issue)
